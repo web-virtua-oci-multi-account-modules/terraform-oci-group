@@ -20,6 +20,13 @@ resource "oci_identity_group" "create_group" {
   freeform_tags  = merge(var.tags, var.use_tags_default ? local.tags_group : {})
 }
 
+resource "oci_identity_user_group_membership" "create_attachment_user_on_group" {
+  for_each = { for index, user_id in var.group_users_ids : index => user_id }
+
+  group_id = oci_identity_group.create_group[0].id
+  user_id = each.value
+}
+
 resource "oci_identity_dynamic_group" "create_dynamic_group" {
   count = var.is_dynamic_group ? 1 : 0
 

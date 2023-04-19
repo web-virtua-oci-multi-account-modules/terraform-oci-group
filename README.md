@@ -30,6 +30,7 @@ provider "oci" {
 ## Features enable of Group configurations for this module:
 
 - Identity group
+- Identity user group membership
 - Identity dynamic group
 - Identity Policy
 
@@ -45,6 +46,27 @@ module "main_clients_compartment" {
   compartment_id = var.tenancy_ocid
   name           = "tf-access"
   description    = "Access group"
+
+  providers = {
+    oci = oci.alias_profile_a
+  }
+}
+```
+
+### Create group without policy and attaching users
+
+```hcl
+module "main_clients_compartment" {
+  source = "web-virtua-oci-multi-account-modules/group/oci"
+
+  compartment_id = var.tenancy_ocid
+  name           = "tf-access"
+  description    = "Access group"
+
+  group_users_ids = [
+    var.user_ocid_1,
+    var.user_ocid_2
+  ]
 
   providers = {
     oci = oci.alias_profile_a
@@ -105,6 +127,7 @@ module "main_clients_compartment" {
 | description | `string` | `-` | yes | Description to compartment is required | `-` |
 | is_dynamic_group | `bool` | `false` | no | If true will be create as dynamic group, else will be create as group | `*`false <br> `*`true |
 | compartment_id | `string` | `null` | no | Compartment ID | `-` |
+| group_users_ids | `list(string)` | `[]` | no | List with OCID of user to attach in group | `-` |
 | enable_delete | `bool` | `true` | no | If true allow delete the compartiment | `*`false <br> `*`true |
 | use_tags_default | `bool` | `true` | no | If true will be use the tags default to resources | `*`false <br> `*`true |
 | dynamic_matching_rule | `string` | `null` | no | Matching rule | `-` |
@@ -144,6 +167,7 @@ variable "policies" {
 | Name | Type |
 |------|------|
 | [oci_identity_group.create_group](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/identity_group) | resource |
+| [oci_identity_user_group_membership.create_attachment_user_on_group](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/identity_user_group_membership) | resource |
 | [oci_identity_dynamic_group.create_dynamic_group](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/identity_dynamic_group) | resource |
 | [oci_identity_policy.create_policy](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartments) | resource |
 
@@ -153,6 +177,7 @@ variable "policies" {
 |------|-------------|
 | `group` | Group |
 | `group_id` | Group ID |
+| `group_attachments` | Group attachments |
 | `dynamic_group` | Dynamic group |
 | `dynamic_group_id` | Dynamic group ID |
 | `policies` | Policies |

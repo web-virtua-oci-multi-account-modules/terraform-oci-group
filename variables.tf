@@ -20,6 +20,12 @@ variable "compartment_id" {
   default     = null
 }
 
+variable "group_users_ids" {
+  description = "List with OCID of user to attach in group"
+  type = list(string)
+  default = []
+}
+
 variable "use_tags_default" {
   description = "If true will be use the tags default to resources"
   type        = bool
